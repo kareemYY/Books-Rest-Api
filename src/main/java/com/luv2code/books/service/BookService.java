@@ -11,7 +11,7 @@ public class BookService {
 
     private final List<Book> books = new ArrayList<>();
 
-    public List<Book> initializeBooks(){
+    public BookService() {
         books.addAll(List.of(
                 new Book("Title one","Author one" , "Science"),
                 new Book("Title two","Author Two","Science"),
@@ -20,7 +20,16 @@ public class BookService {
                 new Book("Title five","Author five","math"),
                 new Book("Title six","Author six","math")
         ));
+    }
+
+    public List<Book> getAllBooks(){
         return books;
+    }
+
+    public Book getBookByTitle(String title){
+        return books.stream()
+                .filter(book -> book.getTitle().equalsIgnoreCase(title))
+                .findFirst().orElse(null);
     }
 
 }
