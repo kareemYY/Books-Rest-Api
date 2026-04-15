@@ -3,10 +3,8 @@ package com.luv2code.books.controller;
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -31,5 +29,31 @@ public class BookController {
     public Book getBookByTitle(@PathVariable String title) {
         return bookService.getBookByTitle(title);
     }
+
+    @PostMapping("/api/books")
+    public Book createBook(@RequestBody Book newBook){
+         return bookService.createBook(newBook);
+    }
+
+
+    @PutMapping("/api/books/{title}")
+    public Book updateBook(@PathVariable String title, @RequestBody Book newBook){
+        return bookService.updateBook(title,newBook);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

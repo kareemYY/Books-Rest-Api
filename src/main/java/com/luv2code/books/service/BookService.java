@@ -32,4 +32,24 @@ public class BookService {
                 .findFirst().orElse(null);
     }
 
+    public Book createBook(Book newBook){
+        boolean isNewBook = books.stream()
+                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
+        if(isNewBook){books.add(newBook);
+        return newBook;
+        }
+        return null;
+    }
+
+    public Book updateBook(String  title ,Book newBook){
+        for (int i = 0 ; i < books.size() ; i++){
+            if (books.get(i).getTitle().equalsIgnoreCase(title)){
+                books.set(i, newBook);
+                return newBook;
+            }
+        }
+        return null;
+    }
+
+
 }
