@@ -16,7 +16,7 @@ class BooksApplicationTests {
 	@Test
 	void contextLoads() {
 
-		assertEquals(6,bookService.initializeBooks().size());
+		assertEquals(6,bookService.getAllBooks().size());
 	}
 
 }

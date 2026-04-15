@@ -5,6 +5,7 @@ import com.luv2code.books.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -16,9 +17,14 @@ public class BookController {
 
 
 
-    @GetMapping("/api")
-    public List<Book> getBooks() {
-        return bookService.getAllBooks();
+    @GetMapping("/api/books")
+    public List<Book> getBooks(@RequestParam(required = false) String category) {
+        if(category == null){return bookService.getAllBooks();}
+
+        return bookService.getAllBooks().stream().filter(
+                book -> book.getCategory().equalsIgnoreCase(category)
+        ).toList();
+
     }
 
     @GetMapping("/api/books/{title}")
