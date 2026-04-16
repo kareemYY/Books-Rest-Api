@@ -1,7 +1,11 @@
 package com.luv2code.books.service;
 
 import com.luv2code.books.entity.Book;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.service.annotation.DeleteExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +54,23 @@ public class BookService {
         }
         return null;
     }
+
+
+    public void deleteBook( String  title){
+        books.removeIf(book -> book.getTitle().equalsIgnoreCase(title));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
