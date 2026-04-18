@@ -1,12 +1,7 @@
 package com.luv2code.books.service;
 
 import com.luv2code.books.entity.Book;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.service.annotation.DeleteExchange;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +12,12 @@ public class BookService {
 
     public BookService() {
         books.addAll(List.of(
-                new Book("Title one","Author one" , "Science"),
-                new Book("Title two","Author Two","Science"),
-                new Book("Title three","Author Three","history"),
-                new Book ("Title four","Author four" , "Science"),
-                new Book("Title five","Author five","math"),
-                new Book("Title six","Author six","math")
+                new Book(1,"Title one"  ,"Author one"   , "Science" ,3),
+                new Book(2,"Title two"  ,"Author two"   , "Math"    ,5),
+                new Book(3,"Title three","Author three" , "Math"    ,6),
+                new Book(4,"Title four" ,"Author four"  , "History" ,1),
+                new Book(5,"Title five" ,"Author five"  , "Math"    ,9),
+                new Book(6,"Title six"  ,"Author six"   , "Science" ,6)
         ));
     }
 
@@ -30,9 +25,9 @@ public class BookService {
         return books;
     }
 
-    public Book getBookByTitle(String title){
+    public Book getBookById(long id){
         return books.stream()
-                .filter(book -> book.getTitle().equalsIgnoreCase(title))
+                .filter(book -> book.getId()==id)
                 .findFirst().orElse(null);
     }
 
@@ -45,9 +40,9 @@ public class BookService {
         return null;
     }
 
-    public Book updateBook(String  title ,Book newBook){
+    public Book updateBook(long id ,Book newBook){
         for (int i = 0 ; i < books.size() ; i++){
-            if (books.get(i).getTitle().equalsIgnoreCase(title)){
+            if (books.get(i).getId()==id){
                 books.set(i, newBook);
                 return newBook;
             }
@@ -56,8 +51,8 @@ public class BookService {
     }
 
 
-    public void deleteBook( String  title){
-        books.removeIf(book -> book.getTitle().equalsIgnoreCase(title));
+    public void deleteBook( long id ){
+        books.removeIf(book -> book.getId() == id);
     }
 
 
