@@ -1,5 +1,6 @@
 package com.luv2code.books.service;
 
+import com.luv2code.books.dto.BookDto;
 import com.luv2code.books.entity.Book;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -31,20 +32,20 @@ public class BookService {
                 .findFirst().orElse(null);
     }
 
-    public Book createBook(Book newBook){
-        boolean isNewBook = books.stream()
-                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
-        if(isNewBook){books.add(newBook);
-        return newBook;
-        }
-        return null;
+    public Book createBook(BookDto newBookDto){
+        long id =books.isEmpty()? 1: books.getLast().getId()+1;
+
+        Book book =convertToBook(id,newBookDto);
+        books.add(book);
+        return book;
     }
 
-    public Book updateBook(long id ,Book newBook){
+    public BookDto updateBook(long id ,BookDto updateBookDto){
         for (int i = 0 ; i < books.size() ; i++){
             if (books.get(i).getId()==id){
-                books.set(i, newBook);
-                return newBook;
+                Book updatedBook = convertToBook(id , updateBookDto);
+                books.set(i, updatedBook);
+                return convertToBookDto(id, updatedBook);
             }
         }
         return null;
@@ -59,7 +60,25 @@ public class BookService {
 
 
 
+    private Book convertToBook(long id,BookDto bookDto){
+        return new Book(
+                id,
+                bookDto.getTitle(),
+                bookDto.getAuthor(),
+                bookDto.getCategory(),
+                bookDto.getRating()
+        );
+    }
 
+    private BookDto convertToBookDto(long id,Book book){
+        return new BookDto(
+                id,
+                book.getTitle(),
+                book.getAuthor(),
+                book.getCategory(),
+                book.getRating()
+        );
+    }
 
 
 

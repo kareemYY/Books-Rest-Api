@@ -1,5 +1,6 @@
 package com.luv2code.books.controller;
 
+import com.luv2code.books.dto.BookDto;
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +33,14 @@ public class BookController {
     }
 
     @PostMapping
-    public Book createBook(@RequestBody Book newBook){
-         return bookService.createBook(newBook);
+    public Book createBook(@RequestBody BookDto newBookDto){
+         return bookService.createBook(newBookDto   );
     }
 
 
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable long id, @RequestBody Book newBook){
-        return bookService.updateBook(id,newBook);
+    public BookDto updateBook(@PathVariable long id, @RequestBody BookDto updateBookDto){
+        return bookService.updateBook(id,updateBookDto);
     }
 
 
