@@ -28,20 +28,18 @@ public class BookController {
     @Operation(summary = "Get All Books " , description = "Retrieve a list of available books")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<Book> getBooks(@Parameter(description = "Optional query parameter")
+    public List<BookDto> getBooks(@Parameter(description = "Optional query parameter")
                                    @RequestParam(required = false) String category) {
+
         if(category == null){return bookService.getAllBooks();}
 
-        return bookService.getAllBooks().stream().filter(
-                book -> book.getCategory().equalsIgnoreCase(category)
-        ).toList();
-
+        return bookService.getAllBooksWithCategory(category);
     }
 
     @Operation(summary = "Get A book By Id ", description = "Retrieve a specific book by id")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public Book getBookByTitle(@Parameter(description = "Id of book to be retrieved")
+    public BookDto getBookById(@Parameter(description = "Id of book to be retrieved")
                                    @PathVariable @Min(value = 1) long id) {
         return bookService.getBookById(id);
     }
@@ -50,13 +48,13 @@ public class BookController {
     @Operation(summary = "Create A new Book ", description = "Add a new book to the list")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Book createBook( @Valid @RequestBody BookDto newBookDto){
-         return bookService.createBook(newBookDto   );
+    public BookDto createBook( @Valid @RequestBody BookDto newBookDto){
+         return bookService.createBook(newBookDto);
     }
 
 
     @Operation(summary = "Update a book ", description = "Update the details of an book ")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     @PutMapping("/{id}")
     public BookDto updateBook(@Parameter(description = "Id of the book to update")
                                   @PathVariable @Min(value = 1) long id,@Valid @RequestBody BookDto updateBookDto){

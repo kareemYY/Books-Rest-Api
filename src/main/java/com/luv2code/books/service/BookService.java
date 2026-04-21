@@ -3,6 +3,8 @@ package com.luv2code.books.service;
 import com.luv2code.books.dto.BookDto;
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.exception.BookNotFoundException;
+import com.luv2code.books.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,63 +12,60 @@ import java.util.List;
 @Service
 public class BookService {
 
-    private final List<Book> books = new ArrayList<>();
+   @Autowired
+   private BookRepository bookRepository;
 
-    public BookService() {
-        books.addAll(List.of(
-                new Book(1,"Title one"  ,"Author one"   , "Science" ,3),
-                new Book(2,"Title two"  ,"Author two"   , "Math"    ,5),
-                new Book(3,"Title three","Author three" , "Math"    ,6),
-                new Book(4,"Title four" ,"Author four"  , "History" ,1),
-                new Book(5,"Title five" ,"Author five"  , "Math"    ,9),
-                new Book(6,"Title six"  ,"Author six"   , "Science" ,6)
-        ));
+
+    public List<BookDto> getAllBooks(){
+        return  convertToBookDtos(bookRepository.findAll());
     }
 
-    public List<Book> getAllBooks(){
-        return books;
+    public List<BookDto> getAllBooksWithCategory(String category){
+        return  convertToBookDtos(bookRepository.findByCategory(category));
     }
 
-    public Book getBookById(long id){
-        return books.stream()
-                .filter(book -> book.getId()==id)
-                .findFirst().orElseThrow(()-> new BookNotFoundException("Book not found -"+id));
+
+
+    public BookDto getBookById(long id){
+        return convertToBookDto(bookRepository.findById(id).orElseThrow(
+                ()->new BookNotFoundException("Book with id "+id+" not found!")));
     }
 
-    public Book createBook(BookDto newBookDto){
-        long id =books.isEmpty()? 1: books.getLast().getId()+1;
-
-        Book book =convertToBook(id,newBookDto);
-        books.add(book);
-        return book;
+    public BookDto createBook(BookDto newBookDto){
+        newBookDto.setId(0);
+        Book newBook = convertToBook(newBookDto);
+        newBook = bookRepository.save(newBook);
+        return convertToBookDto(newBook);
     }
 
     public BookDto updateBook(long id ,BookDto updateBookDto){
-        for (int i = 0 ; i < books.size() ; i++){
-            if (books.get(i).getId()==id){
-                Book updatedBook = convertToBook(id , updateBookDto);
-                books.set(i, updatedBook);
-                return convertToBookDto(id, updatedBook);
-            }
-        }
-        new BookNotFoundException("book not found - "+id);
-        return null;
+        updateBookDto.setId(id);
+        Book updateBook= bookRepository.findById(id).
+                orElseThrow(() -> new BookNotFoundException("Book With "+id+" not found"));
+        updateBook.setAuthor(updateBookDto.getAuthor());
+        updateBook.setTitle(updateBookDto.getTitle());
+        updateBook.setCategory(updateBookDto.getCategory());
+        updateBook.setRating(updateBookDto.getRating());
+
+        Book updatedBook = bookRepository.save(updateBook);
+      return convertToBookDto(updatedBook);
     }
 
 
-    public void deleteBook( long id ){
-        books.stream().filter(book -> book.getId()==id).
-                findFirst().orElseThrow(()-> new BookNotFoundException("Book not found - "+id));
-        books.removeIf(book -> book.getId() == id);
+    public String deleteBook( long id ){
+      Book book = bookRepository.findById(id).
+              orElseThrow(() -> new BookNotFoundException("Book With "+id+" not found"));
+      bookRepository.delete(book);
+      return "Book with id "+id+" has been deleted";
     }
 
 
 
 
 
-    private Book convertToBook(long id,BookDto bookDto){
+    private Book convertToBook(BookDto bookDto){
         return new Book(
-                id,
+                bookDto.getId(),
                 bookDto.getTitle(),
                 bookDto.getAuthor(),
                 bookDto.getCategory(),
@@ -74,9 +73,9 @@ public class BookService {
         );
     }
 
-    private BookDto convertToBookDto(long id,Book book){
+    private BookDto convertToBookDto(Book book){
         return new BookDto(
-                id,
+                book.getId(),
                 book.getTitle(),
                 book.getAuthor(),
                 book.getCategory(),
@@ -84,8 +83,17 @@ public class BookService {
         );
     }
 
+    private List<Book> convertToBooks(List<BookDto> listDto){
+        List<Book> books = new ArrayList<>();
+        for (BookDto bookDto : listDto) {
+            books.add(convertToBook(bookDto));
+        }
+        return books;
+    }
 
-
+    private List<BookDto> convertToBookDtos(List<Book> list){
+        return list.stream().map(this::convertToBookDto).toList();
+    }
 
 
 

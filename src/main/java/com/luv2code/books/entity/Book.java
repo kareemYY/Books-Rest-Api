@@ -1,16 +1,28 @@
 package com.luv2code.books.entity;
 
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "books")
 public class Book {
 
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
 
+    @Column(name = "title", nullable = false, unique = true)
     private String title;
 
+    @Column(name = "author", nullable = false)
     private String author;
 
+    @Column(name = "category")
     private String category;
 
+    @Column(name = "rating")
     private int rating;
 
     public Book(long id, String title, String author, String category, int rating) {
@@ -19,6 +31,16 @@ public class Book {
         this.author = author;
         this.category = category;
         this.rating = rating;
+    }
+
+    public Book(String title, String author, String category, int rating) {
+        this.title = title;
+        this.author = author;
+        this.category = category;
+        this.rating = rating;
+    }
+
+    public Book() {
     }
 
     public long getId() {

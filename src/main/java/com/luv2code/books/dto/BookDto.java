@@ -2,6 +2,7 @@ package com.luv2code.books.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class BookDto {
@@ -9,9 +10,11 @@ public class BookDto {
     long id;
 
     @Size(min = 1, max = 30 , message = "Title is between 1 and 30 ")
+    @NotBlank(message = "Title Must Have a Name")
     private String title;
 
     @Size(min = 1, max = 40 , message = "Author is between 1 and 40 ")
+    @NotBlank(message = "Must Have Author")
     private String author;
 
     @Size(min = 1, max = 30 , message = "Category is between 1 and 30 ")
