@@ -2,6 +2,7 @@ package com.luv2code.books.service;
 
 import com.luv2code.books.dto.BookDto;
 import com.luv2code.books.entity.Book;
+import com.luv2code.books.exception.BookNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class BookService {
     public Book getBookById(long id){
         return books.stream()
                 .filter(book -> book.getId()==id)
-                .findFirst().orElse(null);
+                .findFirst().orElseThrow(()-> new BookNotFoundException("Book not found -"+id));
     }
 
     public Book createBook(BookDto newBookDto){
@@ -48,11 +49,14 @@ public class BookService {
                 return convertToBookDto(id, updatedBook);
             }
         }
+        new BookNotFoundException("book not found - "+id);
         return null;
     }
 
 
     public void deleteBook( long id ){
+        books.stream().filter(book -> book.getId()==id).
+                findFirst().orElseThrow(()-> new BookNotFoundException("Book not found - "+id));
         books.removeIf(book -> book.getId() == id);
     }
 
