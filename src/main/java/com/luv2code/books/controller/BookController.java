@@ -20,20 +20,19 @@ import java.util.List;
 @RequestMapping("api/books")
 public class BookController {
 
-    @Autowired
+
     private BookService bookService;
 
-
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
 
     @Operation(summary = "Get All Books " , description = "Retrieve a list of available books")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<BookDto> getBooks(@Parameter(description = "Optional query parameter")
                                    @RequestParam(required = false) String category) {
-
-        if(category == null){return bookService.getAllBooks();}
-
-        return bookService.getAllBooksWithCategory(category);
+        return bookService.getAllBooks(category);
     }
 
     @Operation(summary = "Get A book By Id ", description = "Retrieve a specific book by id")

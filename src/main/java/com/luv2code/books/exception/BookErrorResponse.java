@@ -8,9 +8,11 @@ public class BookErrorResponse {
 
     private long timestamp;
 
+
     public BookErrorResponse(int status, String message, long timestamp) {
         this.status = status;
         this.message = message;
+        this.timestamp = timestamp;
     }
 
     public int getStatus() {

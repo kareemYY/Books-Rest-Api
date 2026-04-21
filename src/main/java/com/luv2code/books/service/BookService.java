@@ -3,43 +3,47 @@ package com.luv2code.books.service;
 import com.luv2code.books.dto.BookDto;
 import com.luv2code.books.entity.Book;
 import com.luv2code.books.exception.BookNotFoundException;
+import com.luv2code.books.mapper.BookMapper;
 import com.luv2code.books.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BookService {
 
-   @Autowired
-   private BookRepository bookRepository;
+
+   private final BookRepository bookRepository;
+
+   private final BookMapper bookMapper;
 
 
-    public List<BookDto> getAllBooks(){
-        return  convertToBookDtos(bookRepository.findAll());
+    public BookService(BookRepository bookRepository, BookMapper bookMapper) {
+        this.bookRepository = bookRepository;
+        this.bookMapper = bookMapper;
     }
 
-    public List<BookDto> getAllBooksWithCategory(String category){
-        return  convertToBookDtos(bookRepository.findByCategory(category));
+    public List<BookDto> getAllBooks(String category){
+        if (category == null){return  bookMapper.convertToBookDtos(bookRepository.findAll());}
+        else {return bookMapper.convertToBookDtos(bookRepository.findByCategory(category));}
+
     }
+
 
 
 
     public BookDto getBookById(long id){
-        return convertToBookDto(bookRepository.findById(id).orElseThrow(
+        return bookMapper.convertToBookDto(bookRepository.findById(id).orElseThrow(
                 ()->new BookNotFoundException("Book with id "+id+" not found!")));
     }
 
     public BookDto createBook(BookDto newBookDto){
         newBookDto.setId(0);
-        Book newBook = convertToBook(newBookDto);
+        Book newBook = bookMapper.convertToBook(newBookDto);
         newBook = bookRepository.save(newBook);
-        return convertToBookDto(newBook);
+        return bookMapper.convertToBookDto(newBook);
     }
 
     public BookDto updateBook(long id ,BookDto updateBookDto){
-        updateBookDto.setId(id);
         Book updateBook= bookRepository.findById(id).
                 orElseThrow(() -> new BookNotFoundException("Book With "+id+" not found"));
         updateBook.setAuthor(updateBookDto.getAuthor());
@@ -48,7 +52,7 @@ public class BookService {
         updateBook.setRating(updateBookDto.getRating());
 
         Book updatedBook = bookRepository.save(updateBook);
-      return convertToBookDto(updatedBook);
+      return bookMapper.convertToBookDto(updatedBook);
     }
 
 
@@ -58,44 +62,6 @@ public class BookService {
       bookRepository.delete(book);
       return "Book with id "+id+" has been deleted";
     }
-
-
-
-
-
-    private Book convertToBook(BookDto bookDto){
-        return new Book(
-                bookDto.getId(),
-                bookDto.getTitle(),
-                bookDto.getAuthor(),
-                bookDto.getCategory(),
-                bookDto.getRating()
-        );
-    }
-
-    private BookDto convertToBookDto(Book book){
-        return new BookDto(
-                book.getId(),
-                book.getTitle(),
-                book.getAuthor(),
-                book.getCategory(),
-                book.getRating()
-        );
-    }
-
-    private List<Book> convertToBooks(List<BookDto> listDto){
-        List<Book> books = new ArrayList<>();
-        for (BookDto bookDto : listDto) {
-            books.add(convertToBook(bookDto));
-        }
-        return books;
-    }
-
-    private List<BookDto> convertToBookDtos(List<Book> list){
-        return list.stream().map(this::convertToBookDto).toList();
-    }
-
-
 
 
 

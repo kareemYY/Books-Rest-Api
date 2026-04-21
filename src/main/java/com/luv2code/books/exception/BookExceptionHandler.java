@@ -14,7 +14,7 @@ import java.util.List;
 @ControllerAdvice
 public class BookExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<BookErrorResponse> handleException(BookNotFoundException ex){
         BookErrorResponse bookErrorResponse= new BookErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -24,10 +24,10 @@ public class BookExceptionHandler {
         return new ResponseEntity<>(bookErrorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<BookErrorResponse> handleException(Exception ex){
         BookErrorResponse bookErrorResponse= new BookErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 ex.getMessage(),
                 System.currentTimeMillis()
         );

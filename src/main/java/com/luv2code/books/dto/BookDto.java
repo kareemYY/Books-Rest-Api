@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 public class BookDto {
 
-    long id;
+    private long id;
 
     @Size(min = 1, max = 30 , message = "Title is between 1 and 30 ")
     @NotBlank(message = "Title Must Have a Name")
