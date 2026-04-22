@@ -41,4 +41,11 @@ public class BookMapper {
         return list.stream().map(this::convertToBookDto).toList();
     }
 
+    public Book updateToBook(BookDto bookDto, Book book){
+       book.setTitle(bookDto.getTitle());
+       book.setAuthor(bookDto.getAuthor());
+       book.setCategory(bookDto.getCategory());
+       book.setRating(bookDto.getRating());
+       return book;
+    }
 }

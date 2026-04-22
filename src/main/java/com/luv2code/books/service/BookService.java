@@ -5,7 +5,12 @@ import com.luv2code.books.entity.Book;
 import com.luv2code.books.exception.BookNotFoundException;
 import com.luv2code.books.mapper.BookMapper;
 import com.luv2code.books.repository.BookRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -22,11 +27,20 @@ public class BookService {
         this.bookMapper = bookMapper;
     }
 
-    public List<BookDto> getAllBooks(String category){
-        if (category == null){return  bookMapper.convertToBookDtos(bookRepository.findAll());}
-        else {return bookMapper.convertToBookDtos(bookRepository.findByCategory(category));}
+    public Page<BookDto> getAllBooks(int page, int size, String category) {
+        Pageable pageable =PageRequest.of(page, size);
+
+        if (category == null){
+            Page<Book> booksPage = bookRepository.findAll(pageable);
+            return booksPage.map(bookMapper::convertToBookDto);}
+        else {
+            Page<Book> booksPageByCategory = bookRepository.findByCategory(category,pageable);
+            return booksPageByCategory.map(bookMapper::convertToBookDto);}
 
     }
+
+
+   // public Page<BookDto> getAllBooks(String category, Pageable pageable){}
 
 
 
@@ -46,13 +60,9 @@ public class BookService {
     public BookDto updateBook(long id ,BookDto updateBookDto){
         Book updateBook= bookRepository.findById(id).
                 orElseThrow(() -> new BookNotFoundException("Book With "+id+" not found"));
-        updateBook.setAuthor(updateBookDto.getAuthor());
-        updateBook.setTitle(updateBookDto.getTitle());
-        updateBook.setCategory(updateBookDto.getCategory());
-        updateBook.setRating(updateBookDto.getRating());
-
+        bookMapper.updateToBook(updateBookDto,updateBook);
         Book updatedBook = bookRepository.save(updateBook);
-      return bookMapper.convertToBookDto(updatedBook);
+        return bookMapper.convertToBookDto(updatedBook);
     }
 
 

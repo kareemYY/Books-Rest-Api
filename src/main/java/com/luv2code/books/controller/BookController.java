@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +30,13 @@ public class BookController {
     }
 
     @Operation(summary = "Get All Books " , description = "Retrieve a list of available books")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<BookDto> getBooks(@Parameter(description = "Optional query parameter")
-                                   @RequestParam(required = false) String category) {
-        return bookService.getAllBooks(category);
+    public ResponseEntity<Page<BookDto>> getAllBooks(
+                                    @Parameter(description = "Optional query parameter")
+                                   @RequestParam(required = false) String category,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "20")int size) {
+        return ResponseEntity.ok(bookService.getAllBooks(page,size,category));
     }
 
     @Operation(summary = "Get A book By Id ", description = "Retrieve a specific book by id")
