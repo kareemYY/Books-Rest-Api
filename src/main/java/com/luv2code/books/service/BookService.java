@@ -30,17 +30,15 @@ public class BookService {
     public Page<BookDto> getAllBooks(int page, int size, String category) {
         Pageable pageable =PageRequest.of(page, size);
 
-        if (category == null){
+        if (category == null||category.isBlank()){
             Page<Book> booksPage = bookRepository.findAll(pageable);
             return booksPage.map(bookMapper::convertToBookDto);}
         else {
             Page<Book> booksPageByCategory = bookRepository.findByCategory(category,pageable);
             return booksPageByCategory.map(bookMapper::convertToBookDto);}
-
     }
 
 
-   // public Page<BookDto> getAllBooks(String category, Pageable pageable){}
 
 
 
