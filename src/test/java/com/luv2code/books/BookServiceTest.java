@@ -9,6 +9,8 @@ import com.luv2code.books.service.BookService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class BookServiceTest {
 
+    private static final Logger log = LoggerFactory.getLogger(BookServiceTest.class);
     @Autowired
     private JdbcTemplate jdbc;
 
@@ -59,12 +62,7 @@ public class BookServiceTest {
 
 
 
-    @Test
-    public void checkBookById(){
-        BookDto book = bookService.getBookById(1);
-        assertNotNull(book);
-        assertEquals(1,book.getId());
-    }
+
 
     @Test
     public void checkBookSizeWithCategoryNull(){
@@ -101,16 +99,75 @@ public class BookServiceTest {
     }
 
 
+    @Test
+    public void checkBookById(){
+        BookDto book = bookService.getBookById(2);
 
-//checkWithId
-    //checkIfNotExist
-    //checkThrowBookNotFound
+        assertNotNull(book);
+        assertEquals(2,book.getId());
+        assertEquals("math",book.getCategory());
+        assertEquals("aser",book.getAuthor());
+        assertEquals(4,book.getRating());
+        assertEquals("1+1" ,book.getTitle());
+    }
+
+    @Test
+    public void checkBookByIdNotFound(){
+        assertThrows(BookNotFoundException.class, () ->  bookService.getBookById(11));
+    }
+
+    @Test
+    public void createBookAndWithHappyPath(){
+        BookDto bookDto = new BookDto("book2","kareem","history",1);
+        BookDto savedBook = bookService.createBook(bookDto);
+        assertNotNull(savedBook);
+        assertNotEquals(0,savedBook.getId());
+        assertEquals("kareem",savedBook.getAuthor());
+    }
+
+    @Test
+    public void updateBookAndWithHappyPath(){
+        BookDto bookDto = new BookDto("book2","kareem","history",1);
+        BookDto updatedBookDto= bookService.updateBook(3,bookDto);
+        assertNotNull(updatedBookDto);
+        assertNotEquals(0,updatedBookDto.getId());
+        assertEquals("kareem",updatedBookDto.getAuthor());
+        assertEquals("book2",updatedBookDto.getTitle());
+        assertEquals(1,updatedBookDto.getRating());
+    }
+
+    @Test
+    public void updateBookWithNotFoundId(){
+        assertEquals(4, bookRepo.count());
+        BookDto bookDto = new BookDto("book2","kareem","history",1);
+        assertThrows(BookNotFoundException.class, () ->  bookService.updateBook(9,bookDto));
+        assertFalse(bookService.checkIfBookExistsByTitle("book2"));
+        assertEquals(4, bookRepo.count());
+    }
+
+    @Test
+    public void deleteBookAndWithHappyPath(){
+        assertEquals(4, bookRepo.count());
+        long id =2 ;
+        BookDto bookDto = bookService.getBookById(id);
+        assertEquals("aser",bookDto.getAuthor());
+        assertEquals(4,bookDto.getRating());
+        assertEquals("1+1" ,bookDto.getTitle());
+        assertEquals("math",bookDto.getCategory());
+
+        bookService.deleteBook(id);
+        assertEquals(3,bookRepo.count());
+        assertThrows(BookNotFoundException.class, () ->  bookService.getBookById(id));
+    }
 
 
-
-
-
-
+    @Test
+    public void deleteBookWithNotFoundId(){
+        assertEquals(4, bookRepo.count());
+        long id =20;
+        assertThrows(BookNotFoundException.class, () ->  bookService.deleteBook(id));
+        assertEquals(4, bookRepo.count());
+    }
 
 
 

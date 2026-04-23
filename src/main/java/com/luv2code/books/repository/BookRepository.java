@@ -10,7 +10,8 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-    List<Book> findByTitle(String title);
+    boolean existsByTitle(String title);
+    Book findByTitle(String title);
     List<Book> findByAuthor(String author);
     Page<Book> findByCategory(String category, Pageable pageable);
 }

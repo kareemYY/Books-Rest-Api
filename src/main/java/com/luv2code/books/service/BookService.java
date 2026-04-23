@@ -39,6 +39,10 @@ public class BookService {
     }
 
 
+    public boolean checkIfBookExistsByTitle(String title) {
+        return bookRepository.existsByTitle(title);
+    }
+
 
 
 
