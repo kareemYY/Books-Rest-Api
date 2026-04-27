@@ -2,15 +2,12 @@ package com.luv2code.books;
 
 
 import com.luv2code.books.dto.BookDto;
-import com.luv2code.books.entity.Book;
 import com.luv2code.books.exception.BookNotFoundException;
 import com.luv2code.books.repository.BookRepository;
 import com.luv2code.books.service.BookService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class BookServiceTest {
 
-    private static final Logger log = LoggerFactory.getLogger(BookServiceTest.class);
+
     @Autowired
     private JdbcTemplate jdbc;
 
@@ -60,10 +57,6 @@ public class BookServiceTest {
         jdbc.execute(createBook4);
     }
 
-
-
-
-
     @Test
     public void checkBookSizeWithCategoryNull(){
         Page<BookDto> bookDtos=bookService.getAllBooks(0,2,null);
@@ -89,15 +82,12 @@ public class BookServiceTest {
         assertTrue(bookDtos.getContent().isEmpty());
     }
 
-
-
     @Test
     public void checkBooksByBlankCategory(){
         Page<BookDto> bookDtos=bookService.getAllBooks(0,2,"");
         assertEquals(4,bookDtos.getTotalElements());
         assertEquals(2,bookDtos.getSize());
     }
-
 
     @Test
     public void checkBookById(){
@@ -160,7 +150,6 @@ public class BookServiceTest {
         assertThrows(BookNotFoundException.class, () ->  bookService.getBookById(id));
     }
 
-
     @Test
     public void deleteBookWithNotFoundId(){
         assertEquals(4, bookRepo.count());
@@ -169,38 +158,9 @@ public class BookServiceTest {
         assertEquals(4, bookRepo.count());
     }
 
-
-
-
-
-
-
-
-
-
-
     @AfterEach
     public void cleanDatabase() {
         jdbc.execute(deleteBook);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
