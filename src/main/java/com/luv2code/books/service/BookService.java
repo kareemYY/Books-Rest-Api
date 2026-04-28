@@ -61,7 +61,7 @@ public class BookService {
 
     public BookDto updateBook(long id ,BookDto updateBookDto){
         Book updateBook= bookRepository.findById(id).
-                orElseThrow(() -> new BookNotFoundException("Book With "+id+" not found"));
+                orElseThrow(() -> new BookNotFoundException("Book with id " +id+ " not found!"));
         bookMapper.updateToBook(updateBookDto,updateBook);
         Book updatedBook = bookRepository.save(updateBook);
         return bookMapper.convertToBookDto(updatedBook);
@@ -70,7 +70,7 @@ public class BookService {
 
     public String deleteBook( long id ){
       Book book = bookRepository.findById(id).
-              orElseThrow(() -> new BookNotFoundException("Book With "+id+" not found"));
+              orElseThrow(() -> new BookNotFoundException("Book with id " +id+ " not found!"));
       bookRepository.delete(book);
       return "Book with id "+id+" has been deleted";
     }

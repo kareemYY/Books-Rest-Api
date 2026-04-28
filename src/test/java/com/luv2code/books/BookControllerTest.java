@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -30,6 +31,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource("/application-test.properties")
@@ -92,26 +94,7 @@ public class BookControllerTest {
     }
 
 
-    @Test
-    public void createBookTest() throws Exception {
-        Book book = new Book("WW2","Kareem","history",5);
 
-        mockMvc.perform(post("/api/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(book)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id",is(5)))
-                .andExpect(jsonPath("$.title",is("WW2")))
-                .andExpect(jsonPath("$.author",is("Kareem")))
-                .andExpect(jsonPath("$.category",is("history")))
-                .andExpect(jsonPath("$.rating",is(5)));
-
-        Optional<Book> checkBook = bookRepository.findById(5l);
-        assertNotNull(checkBook,"book should be fond");
-        assertTrue(checkBook.isPresent());
-        assertEquals("WW2",checkBook.get().getTitle());
-    }
 
     @Test
     public void getBooksTest() throws Exception {
@@ -134,6 +117,115 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$.content[1].title",is("2+2=5")));
     }
 
+    @Test
+    public void getBookWithPageSize2() throws Exception {
+        mockMvc.perform(get("/api/books").param("size","2")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalPages",is(2)))
+                .andExpect(jsonPath("$.content",hasSize(2)))
+                .andExpect(jsonPath("$.content[0].author",is("kareem")));
+    }
+
+    @Test
+    public void getBookWithPageSize2AndPage2() throws Exception {
+        mockMvc.perform(get("/api/books").param("page","1").param("size","2")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].title",is("ramses")));
+    }
+
+    @Test
+    public void getBookById() throws Exception {
+        assertTrue(bookRepository.findById(2l).isPresent());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/books/{id}",2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id",is(2)))
+                .andExpect(jsonPath("$.title",is("1+1")))
+                .andExpect(jsonPath("$.author",is("aser")))
+                .andExpect(jsonPath("$.category",is("math")))
+                .andExpect(jsonPath("$.rating",is(4)));
+    }
+
+    @Test
+    public void getBookByIdWithNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/books/{id}",5))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message",is("Book with id 5 not found!")))
+                .andExpect(jsonPath("$.status",is(404)));
+    }
+
+    @Test
+    public void createBookTest() throws Exception {
+        Book book = new Book("WW2","Kareem","history",5);
+
+        mockMvc.perform(post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id",is(5)))
+                .andExpect(jsonPath("$.title",is("WW2")))
+                .andExpect(jsonPath("$.author",is("Kareem")))
+                .andExpect(jsonPath("$.category",is("history")))
+                .andExpect(jsonPath("$.rating",is(5)));
+
+        Optional<Book> checkBook = bookRepository.findById(5l);
+        assertNotNull(checkBook,"book should be fond");
+        assertTrue(checkBook.isPresent());
+        assertEquals("WW2",checkBook.get().getTitle());
+    }
+
+    @Test
+    public void createBookWithBlankTitle() throws Exception {
+        Book book = new Book("   ", "adam", "science", 2);
+
+        mockMvc.perform(post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status",is(400)));
+    }
+
+    @Test
+    public void updateBookTest() throws Exception {
+        Book book = new Book("WW2","Kareem","history",5);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}",2)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id",is(2)))
+                .andExpect(jsonPath("$.title",is("WW2")))
+                .andExpect(jsonPath("$.author",is("Kareem")))
+                .andExpect(jsonPath("$.category",is("history")))
+                .andExpect(jsonPath("$.rating" ,is(5)));
+    }
+
+    @Test
+    public void updateBookWithNotFoundIdHttpRequest()throws Exception{
+        Book book = new Book("WW2","Kareem","history",5);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}",6)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message",is("Book with id 6 not found!")));
+    }
+
+    @Test
+    public void deleteBookByIdHttpRequest() throws Exception {
+            Book  book = new Book("WW2","Kareem","history",5);
+            entityManager.persist(book);
+            entityManager.flush();
+
+            mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/{id}",5))
+                    .andExpect(status().isNoContent());
+
+    }
 
 
     @AfterEach
