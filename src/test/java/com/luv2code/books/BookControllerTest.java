@@ -97,7 +97,7 @@ public class BookControllerTest {
 
 
     @Test
-    public void getBooksTest() throws Exception {
+    public void getBooksTestHttpRequest() throws Exception {
 
        mockMvc.perform(get("/api/books")
                .accept(MediaType.APPLICATION_JSON))
@@ -108,7 +108,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void getBookByCategory() throws Exception {
+    public void getBookByCategoryHttpRequest() throws Exception {
         mockMvc.perform(get("/api/books").param("category","math")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -118,7 +118,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void getBookWithPageSize2() throws Exception {
+    public void getBookWithPageSize2HttpRequest() throws Exception {
         mockMvc.perform(get("/api/books").param("size","2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -128,7 +128,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void getBookWithPageSize2AndPage2() throws Exception {
+    public void getBookWithPageSize2AndPage2HttpRequest() throws Exception {
         mockMvc.perform(get("/api/books").param("page","1").param("size","2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -136,7 +136,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void getBookById() throws Exception {
+    public void getBookByIdHttpRequest() throws Exception {
         assertTrue(bookRepository.findById(2l).isPresent());
         mockMvc.perform(MockMvcRequestBuilders.get("/api/books/{id}",2))
                 .andExpect(status().isOk())
@@ -148,7 +148,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void getBookByIdWithNotFound() throws Exception {
+    public void getBookByIdWithNotFoundHttpRequest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/books/{id}",5))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message",is("Book with id 5 not found!")))
@@ -156,7 +156,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void createBookTest() throws Exception {
+    public void createBookTestHttpRequest() throws Exception {
         Book book = new Book("WW2","Kareem","history",5);
 
         mockMvc.perform(post("/api/books")
@@ -177,7 +177,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void createBookWithBlankTitle() throws Exception {
+    public void createBookWithBlankTitleHttpRequest() throws Exception {
         Book book = new Book("   ", "adam", "science", 2);
 
         mockMvc.perform(post("/api/books")
@@ -189,7 +189,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void updateBookTest() throws Exception {
+    public void updateBookTestHttpRequest() throws Exception {
         Book book = new Book("WW2","Kareem","history",5);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/books/{id}",2)
@@ -224,6 +224,16 @@ public class BookControllerTest {
 
             mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/{id}",5))
                     .andExpect(status().isNoContent());
+            Optional<Book> book1 = bookRepository.findById(5l);
+            assertFalse(book1.isPresent());
+    }
+
+    @Test
+    public void deleteBookNotFoundIdHttpRequest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/{id}",5))
+                .andExpect(status().isNotFound());
+        Optional<Book> book1 = bookRepository.findById(5l);
+        assertFalse(book1.isPresent());
 
     }
 
