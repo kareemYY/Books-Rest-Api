@@ -1,23 +1,18 @@
-# 📚 Books REST API
+# Books REST API
 
 A Spring Boot RESTful API for managing books with full CRUD operations, pagination, filtering, validation, and comprehensive integration testing.
 
----
 
-## 🚀 Features
+## Features
 
-- Create, Read, Update, Delete (CRUD) operations
-- Pagination support
-- Filter books by category
+- Create, Read, Update, Delete (CRUD) operations with Pagination support and Filter books by category
 - Input validation using Bean Validation
 - Global exception handling
-- DTO mapping layer
+- DTO mapping layer and design pattern
 - Swagger/OpenAPI documentation
-- Integration tests using H2 in-memory database
+- testing using H2 in-memory database
 
----
-
-## 🏗️ Tech Stack
+## Tools & Technologies
 
 - Java
 - Spring Boot
@@ -31,34 +26,17 @@ A Spring Boot RESTful API for managing books with full CRUD operations, paginati
 
 ---
 
-## 📦 API Endpoints
+## API Endpoints Documentation
+- @Get("/api/books") ===============> Get all books (with pagination $ category filter)
+- @Get("/api/books/{id}") ==========> Get one book by bookId
+- @Post("/api/books") ==============> Create a new book
+- @Put("/api/books/{id}") ==========> Update book
+- @Delete("/api/books/{id}") =======> Delete book by id
 
-| Method | Endpoint | Description |
-|-------|---------|-------------|
-| GET | /api/books | Get all books (with pagination & category filter) |
-| GET | /api/books/{id} | Get book by ID |
-| POST | /api/books | Create new book |
-| PUT | /api/books/{id} | Update book |
-| DELETE | /api/books/{id} | Delete book |
 
----
-
-## 🧪 Testing
-
-The project includes full integration tests covering:
-
+##  Testing 
 - CRUD operations
 - Pagination & filtering
 - Exception handling
 - Database validation
 
-Tests use:
-- Spring Boot Test
-- H2 in-memory database
-
----
-
-## ⚙️ Running the Project
-
-```bash
-mvn spring-boot:run
