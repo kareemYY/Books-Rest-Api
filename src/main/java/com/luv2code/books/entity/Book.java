@@ -10,7 +10,7 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id" ,nullable = false)
     private long id;
 
     @Column(name = "title", nullable = false, unique = true)
@@ -25,19 +25,16 @@ public class Book {
     @Column(name = "rating")
     private int rating;
 
-    public Book(long id, String title, String author, String category, int rating) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.category = category;
-        this.rating = rating;
-    }
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name = "owner_id" ,nullable = false)
+    private User owner;
 
-    public Book(String title, String author, String category, int rating) {
+    public Book(String title, String author, String category, int rating, User owner) {
         this.title = title;
         this.author = author;
         this.category = category;
         this.rating = rating;
+        this.owner = owner;
     }
 
     public Book() {
@@ -81,5 +78,13 @@ public class Book {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }
