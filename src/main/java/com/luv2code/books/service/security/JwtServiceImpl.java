@@ -12,6 +12,7 @@ import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
+import java.util.function.Function;
 
 
 @Server
@@ -28,8 +29,14 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
+        return extractClaim(token, Claims::getSubject);
     }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSignKey())
@@ -40,8 +47,15 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return extractUsername(token).equals(username) && !isTokenExpired(token);
+    }
 
-        return false;
+    private boolean isTokenExpired(String token) {
+        return getExpirationDate(token).before(new Date());
+    }
+    private Date getExpirationDate(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     @Override
