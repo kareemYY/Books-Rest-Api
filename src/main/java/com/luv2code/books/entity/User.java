@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -131,5 +132,14 @@ public class User implements UserDetails {
 
     public void setBooks(List<Book> books) {
         this.books = books;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+    public void addAuthority(Authority authority) {
+        if (authorities == null){authorities = new ArrayList<>();}
+        this.authorities.add(authority);
     }
 }

@@ -3,6 +3,7 @@ package com.luv2code.books.config;
 import com.luv2code.books.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -64,8 +65,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers("/swagger-ui/**","/v3/api-docs/**"
-                        ,"/swagger-resources/**","/webjars/**","/docs").permitAll());
+                        .requestMatchers("/api/auth/**","/swagger-ui/**","/v3/api-docs/**",
+                                "/sawgger-resources/**","/webjars/**","/docs").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/books").permitAll()
+                        .requestMatchers("/api/author/**").hasRole("AUTHOR")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated());
 
         http.csrf(csrf -> csrf.disable());
         http.exceptionHandling(exceptionHandling ->

@@ -4,18 +4,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
 
-@Server
+@Service
 public class JwtServiceImpl implements JwtService {
 
 
@@ -48,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return extractUsername(token).equals(username) && !isTokenExpired(token);
+        return extractUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
