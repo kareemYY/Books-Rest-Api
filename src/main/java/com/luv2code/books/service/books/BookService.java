@@ -15,7 +15,7 @@ public interface BookService {
 
     void deleteBookByTitle(String title);
 
-    void ratingBookByTitle(String title);
+    BookResponse ratingBookByTitle(String title,int rating);
 
 
 }

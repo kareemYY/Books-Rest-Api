@@ -5,11 +5,10 @@ import com.luv2code.books.dto.response.BookResponse;
 import com.luv2code.books.service.books.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,6 +32,14 @@ public class GeneralUserController {
     @GetMapping
     public List<BookResponse> bookResponses(){
        return bookService.findAllBooksForAnonymousUser();
+    }
+
+
+    @Operation(summary = "Review a book " ,description = "Adding rate for book")
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{title}/{rating}")
+    public BookResponse addingRatingForBook(@PathVariable  String title,@PathVariable@Min(1) @Max(5) int rating){
+       return bookService.ratingBookByTitle(title,rating);
     }
 
 

@@ -76,9 +76,16 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public void ratingBookByTitle(String title) {
-
-
+    public BookResponse ratingBookByTitle(String title,int rating) {
+        User currentUser = findAuthenticatedUser.getAuthenticatedUser();
+        if((isAdmin(currentUser)||isAuthor(currentUser))) {
+            throw new AuthorizationDeniedException("You are not allowed to rating this book");
+        }
+        Book book = bookRepository.findByTitle(title)
+                .orElseThrow(()-> new BookNotFoundException("This Book Not Found : " + title));
+        book.addRating(rating);
+        bookRepository.save(book);
+        return convertBookToBookResponse(book);
     }
 
 
