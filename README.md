@@ -91,10 +91,10 @@ A secure Spring Boot RESTful API for managing books, users, and roles with JWT a
     
 
 - @Get("/api/books") ===============> Get all books (with pagination $ category filter)
-- @Get("/api/books/{id}") ==========> Get one book by bookId
+- @Get("/api/books/{id}") ============> Get one book by bookId
 - @Post("/api/books") ==============> Create a new book
-- @Put("/api/books/{id}") ==========> Update book
-- @Delete("/api/books/{id}") =======> Delete book by id
+- @Put("/api/books/{id}") ============> Update book
+- @Delete("/api/books/{id}") ==========> Delete book by id
 
 ## Future Improvements
   - Refresh Token
